@@ -9,14 +9,15 @@ A set of Plex web service credentials are required. Knowledge of Plex data sourc
 
 ## Installation
 
-Add as a library to an Android project.
-  https://medium.com/@deepakpk/how-to-add-a-git-android-library-project-as-a-sub-module-c713a653ab1f
+Below are some options to install the SDK:
 
-You can build the project as a jar file and include it in your project.
+* Add as a library to an Android project.
 
-You can fork the project and include it in your project.
+* You can build the project as a jar file and include it in your project.
 
-Need to include in *AndroidManifest.xml*
+* You can fork the project and include it in your project.
+
+**Note** you need to include the following line in *AndroidManifest.xml*
 ```xml
  <uses-permission android:name="android.permission.INTERNET" />
  ```
@@ -31,4 +32,4 @@ As much as possible, coding follows the [Google Java Style Guide](https://google
 
 ## Credits
 
-Lead Developer - Barrie Vince @barrievince
+Lead Developer - Barrie Vince [@barrievince](https://github.com/barrievine)
