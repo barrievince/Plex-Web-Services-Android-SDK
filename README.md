@@ -8,7 +8,7 @@ Runs on Android API 19 (Version 4.4) or above.
 A set of Plex web service credentials are required. Knowledge of Plex data sources is helpful.
 
 ## Installation
----
+
 Add as a library to an Android project.
   https://medium.com/@deepakpk/how-to-add-a-git-android-library-project-as-a-sub-module-c713a653ab1f
 
@@ -22,7 +22,7 @@ Need to include in *AndroidManifest.xml*
  ```
 
 ## Contributing
----
+
 Contributions are welcome!
 
 All submissions are through pull requests.
@@ -30,5 +30,5 @@ All submissions are through pull requests.
 As much as possible, coding follows the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html).
 
 ## Credits
----------
+
 Lead Developer - Barrie Vince @barrievince
