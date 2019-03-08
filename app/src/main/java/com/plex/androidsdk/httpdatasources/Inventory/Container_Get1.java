@@ -153,6 +153,14 @@ public class Container_Get1 extends HttpDataSourceTask {
         inputParameters.setSerialNo(serialNo);
     }
 
+    /**
+     * Get the Serial No
+     * @return String The serial no.
+     */
+    public String getSerialNo() {
+        return inputParameters.getSerialNo();
+    }
+
     /** ****** CLASSES ****** **/
 
     /**
@@ -165,6 +173,10 @@ public class Container_Get1 extends HttpDataSourceTask {
 
         public void setSerialNo(String serialNo) {
             this.serialNo = serialNo;
+        }
+
+        public String getSerialNo() {
+            return serialNo;
         }
     }
 
