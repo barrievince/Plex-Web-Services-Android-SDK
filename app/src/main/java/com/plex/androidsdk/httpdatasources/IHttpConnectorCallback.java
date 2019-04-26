@@ -20,9 +20,9 @@
 package com.plex.androidsdk.httpdatasources;
 
 /**
- * Interface to implement when processing calls to classes that extend HttpDataSourceTask.
+ * Interface to implement when processing calls to classes that extend HttpConnectorTask.
  */
-public interface IHttpDataSourceCallback {
+public interface IHttpConnectorCallback {
 
     /**
      * Progress status codes
@@ -40,11 +40,11 @@ public interface IHttpDataSourceCallback {
      * Returns the result of the http data source call to the callback handler.
      * @param result The result of the http data source call and the data source result.
      */
-    void onHttpDataSourceComplete(DataSourceResult result);
+    void onHttpDataSourceComplete(HttpDataSourceResult result);
 
     /**
      * Indicate to callback handler any progress update.
-     * @param progressCode One of the constants defined in IHttpDataSourceCallback.Progress.
+     * @param progressCode One of the constants defined in IHttpConnectorCallback.Progress.
      */
     void onProgressUpdate(int progressCode);
 

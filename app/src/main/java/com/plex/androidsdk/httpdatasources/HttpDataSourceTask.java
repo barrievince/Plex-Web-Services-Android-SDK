@@ -28,7 +28,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import com.plex.androidsdk.httpdatasources.IHttpDataSourceCallback.Progress;
+import com.plex.androidsdk.httpdatasources.IHttpConnectorCallback.Progress;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -56,29 +56,29 @@ public abstract class HttpDataSourceTask extends AsyncTask<HttpDataSourceRequest
     private static final String ACCEPT = "application/json";
     private static final String ACCEPT_ENCODING = "gzip, deflate";
 
-    private IHttpDataSourceCallback _callback;
+    private IHttpConnectorCallback _callback;
     private HttpDataSourceCredentials _credentials;
     private String _serverName;
     private boolean _useTestServer;
 
     /**
-     * Create an instance of HttpDataSourceTask
+     * Create an instance of HttpConnectorTask
      * @param callback The process to notify when complete.
      * @param credentials The credentials to use to authenticate.
      * @param serverName For data stored in AH use "cloud". For all others, use customer code.
      */
-    public HttpDataSourceTask(IHttpDataSourceCallback callback, HttpDataSourceCredentials credentials, String serverName) {
+    public HttpDataSourceTask(IHttpConnectorCallback callback, HttpDataSourceCredentials credentials, String serverName) {
         this(callback, credentials, serverName, false);
     }
 
     /**
-     * Create an instance of HttpDataSourceTask
+     * Create an instance of HttpConnectorTask
      * @param callback The process to notify when complete.
      * @param credentials The credentials to use to authenticate.
      * @param serverName For data stored in AH use "cloud". For all others, use customer code.
      * @param useTestServer Make calls to the test environment.
      */
-    public HttpDataSourceTask(IHttpDataSourceCallback callback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer) {
+    public HttpDataSourceTask(IHttpConnectorCallback callback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer) {
         _callback = callback;
         _credentials = credentials;
         _serverName = serverName;
@@ -137,7 +137,7 @@ public abstract class HttpDataSourceTask extends AsyncTask<HttpDataSourceRequest
             dsResult.setException(result.getException());
         }
 
-        _callback.onHttpDataSourceComplete(dsResult);
+//        _callback.onHttpDataSourceComplete(dsResult);
         _callback.onFinish();
     }
 
@@ -172,7 +172,7 @@ public abstract class HttpDataSourceTask extends AsyncTask<HttpDataSourceRequest
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
         try {
-            publishProgress(IHttpDataSourceCallback.Progress.CONNECTION_SUCCESS);
+            publishProgress(IHttpConnectorCallback.Progress.CONNECTION_SUCCESS);
 
             // Send the Json request
             connection.setRequestMethod(HTTP_REQUEST_METHOD);
@@ -189,7 +189,7 @@ public abstract class HttpDataSourceTask extends AsyncTask<HttpDataSourceRequest
             outStream.writeBytes(request.getJsonRequest());
             outStream.flush();
             outStream.close();
-            publishProgress(IHttpDataSourceCallback.Progress.REQUEST_SENT);
+            publishProgress(IHttpConnectorCallback.Progress.REQUEST_SENT);
 
             int responseCode = connection.getResponseCode();
             publishProgress(Progress.RESPONSE_RECEIVED);

@@ -23,7 +23,7 @@ package com.plex.androidsdk.httpdatasources;
  * Wrapper class that returns the result of the http data source call. This is passed to the UI thread
  * for the JSON to be parsed and other logic applied.
  */
-// TODO: Can this be an HttpDataSourceTask internal class?
+// TODO: Can this be an HttpConnectorTask internal class?
 public class HttpDataSourceResult {
 
     private String _jsonResponse;

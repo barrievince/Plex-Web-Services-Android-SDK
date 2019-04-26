@@ -23,10 +23,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.annotations.SerializedName;
 import com.plex.androidsdk.httpdatasources.BaseOutputs;
 import com.plex.androidsdk.httpdatasources.BaseRow;
+import com.plex.androidsdk.httpdatasources.DataSource;
 import com.plex.androidsdk.httpdatasources.IBaseInput;
-import com.plex.androidsdk.httpdatasources.IHttpDataSourceCallback;
+import com.plex.androidsdk.httpdatasources.IDataSourceCallback;
 import com.plex.androidsdk.httpdatasources.HttpDataSourceCredentials;
-import com.plex.androidsdk.httpdatasources.HttpDataSourceTask;
 
 import java.math.BigDecimal;
 
@@ -35,21 +35,22 @@ import java.math.BigDecimal;
  * <p>
  * Data source: Container_Get1
  */
-public class Container_Get1 extends HttpDataSourceTask {
+public class Container_Get1 extends DataSource {
 
     private InputParameters inputParameters = new InputParameters();
 
     /**
      * {@inheritDoc}
      */
-    public Container_Get1(IHttpDataSourceCallback callback, HttpDataSourceCredentials credentials, String serverName) {
+    public Container_Get1(IDataSourceCallback callback, HttpDataSourceCredentials credentials, String serverName) {
+
         this(callback, credentials, serverName, false);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Container_Get1(IHttpDataSourceCallback callback, HttpDataSourceCredentials credentials, String serverName, boolean test) {
+    public Container_Get1(IDataSourceCallback callback, HttpDataSourceCredentials credentials, String serverName, boolean test) {
         super(callback, credentials, serverName, test);
     }
 
@@ -67,6 +68,7 @@ public class Container_Get1 extends HttpDataSourceTask {
     /**
      * The input parameters to be used for the data source call.
      * {@inheritDoc}
+     *
      * @return BaseInput Contains the input parameter values.
      */
     @Override
@@ -150,6 +152,7 @@ public class Container_Get1 extends HttpDataSourceTask {
 
     /**
      * Method to enable setting the Serial No input parameter.
+     *
      * @param serialNo The Serial No to search for.
      */
     public void setSerialNo(String serialNo) {
@@ -158,11 +161,13 @@ public class Container_Get1 extends HttpDataSourceTask {
 
     /**
      * Get the Serial No
+     *
      * @return String The serial no.
      */
     public String getSerialNo() {
         return inputParameters.getSerialNo();
     }
+
 
     /** ****** CLASSES ****** **/
 
@@ -171,7 +176,7 @@ public class Container_Get1 extends HttpDataSourceTask {
      * Used by GSON to serialize into JSON.
      */
     private class InputParameters implements IBaseInput {
-        @SerializedName ("Serial_No")
+        @SerializedName("Serial_No")
         private String serialNo;
 
         public void setSerialNo(String serialNo) {

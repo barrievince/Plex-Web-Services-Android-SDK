@@ -21,7 +21,7 @@
 package com.plex.androidsdk.httpdatasources;
 
 /**
- * Wrapper class for all the data required to make an http data source request using HttpDataSourceTask.
+ * Wrapper class for all the data required to make an http data source request using HttpConnectorTask.
  * Passed to the background thread.
  */
 class HttpDataSourceRequest {
