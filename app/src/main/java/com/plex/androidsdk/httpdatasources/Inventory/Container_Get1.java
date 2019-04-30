@@ -90,7 +90,7 @@ public class Container_Get1 extends DataSource {
      * Parse the JSON for a returned row and assign to the Row class.
      *
      * @param rowArray A row entry in the returned JSON.
-     * @return Row Contains the values from the parsed JSON.
+     * @return Row Contains the values from the parsed JSON. Returns null if no data.
      */
     @Override
     protected BaseRow parseRow(JsonArray rowArray) {

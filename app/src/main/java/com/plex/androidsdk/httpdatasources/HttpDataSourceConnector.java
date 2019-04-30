@@ -11,13 +11,13 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class HttpConnector implements IHttpConnector {
+public class HttpDataSourceConnector implements IDataSourceConnector {
     private static final String PRODUCTION_URL_FORMAT = "https://%1s.plex.com/api/datasources/%2s/execute";
     private static final String TEST_URL_FORMAT = "https://test.%1s.plex.com/api/datasources/%2s/execute";
-    private IHttpConnectorCallback _callback;
+    private IDataSourceConnectorCallback _callback;
 
     @Override
-    public void execute(int dataSourceKey, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer, String jsonRequest, IHttpConnectorCallback callback) {
+    public void execute(int dataSourceKey, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer, String jsonRequest, IDataSourceConnectorCallback callback) {
 
         _callback = callback;
         String url = this.getUrl(serverName, dataSourceKey, useTestServer);
@@ -29,7 +29,7 @@ public class HttpConnector implements IHttpConnector {
     /**
      * Perform the http data source call in a background thread.
      */
-    class HttpConnectorTask extends AsyncTask<HttpDataSourceRequest, Integer, HttpDataSourceResult> {
+    private class HttpConnectorTask extends AsyncTask<HttpDataSourceRequest, Integer, HttpDataSourceResult> {
         static final String HTTP_REQUEST_METHOD = "POST";
         static final String CONTENT_TYPE = "application/json; charset=utf-8";
         static final String ACCEPT = "application/json";
@@ -50,7 +50,7 @@ public class HttpConnector implements IHttpConnector {
             try {
                 httpDataSourceResult = callHttpDataSource(request);
             } catch (IOException e) {
-                publishProgress(IHttpConnectorCallback.Progress.ERROR);
+                publishProgress(IDataSourceConnectorCallback.Progress.ERROR);
                 return new HttpDataSourceResult(e);
             }
 
@@ -71,7 +71,7 @@ public class HttpConnector implements IHttpConnector {
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
             try {
-                publishProgress(IHttpConnectorCallback.Progress.CONNECTION_SUCCESS);
+                publishProgress(IDataSourceConnectorCallback.Progress.CONNECTION_SUCCESS);
 
                 // Send the Json request
                 connection.setRequestMethod(HTTP_REQUEST_METHOD);
@@ -88,10 +88,10 @@ public class HttpConnector implements IHttpConnector {
                 outStream.writeBytes(request.getJsonRequest());
                 outStream.flush();
                 outStream.close();
-                publishProgress(IHttpConnectorCallback.Progress.REQUEST_SENT);
+                publishProgress(IDataSourceConnectorCallback.Progress.REQUEST_SENT);
 
                 int responseCode = connection.getResponseCode();
-                publishProgress(IHttpConnectorCallback.Progress.RESPONSE_RECEIVED);
+                publishProgress(IDataSourceConnectorCallback.Progress.RESPONSE_RECEIVED);
 
                 String responseBody;
                 if (responseCode == 200) {
@@ -100,7 +100,7 @@ public class HttpConnector implements IHttpConnector {
                     responseBody = this.getStringFromInputStream(connection.getErrorStream());
                 }
 
-                publishProgress(IHttpConnectorCallback.Progress.PROCESSING_RESULT);
+                publishProgress(IDataSourceConnectorCallback.Progress.PROCESSING_RESULT);
                 httpDataSourceResult = new HttpDataSourceResult(responseBody, responseCode);
             } catch (IOException ioe) {
                 httpDataSourceResult = new HttpDataSourceResult(ioe);
@@ -108,15 +108,22 @@ public class HttpConnector implements IHttpConnector {
                 connection.disconnect();
             }
 
-            publishProgress(IHttpConnectorCallback.Progress.PROCESSING_RESULT_COMPLETE);
+            publishProgress(IDataSourceConnectorCallback.Progress.PROCESSING_RESULT_COMPLETE);
 
             return httpDataSourceResult;
         }
+
 
         @Override
         protected void onPostExecute(HttpDataSourceResult httpDataSourceResult) {
             super.onPostExecute(httpDataSourceResult);
             onAsyncTaskDone(httpDataSourceResult);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            onAsyncTaskUpdate(values[0]);
         }
 
         /**
@@ -139,10 +146,20 @@ public class HttpConnector implements IHttpConnector {
 
     /**
      * Called by AsyncTask on completion of task.
+     *
      * @param httpDataSourceResult The outputs from the task.
      */
-    void onAsyncTaskDone(HttpDataSourceResult httpDataSourceResult) {
-        _callback.onHttpDataSourceComplete(httpDataSourceResult);
+    private void onAsyncTaskDone(HttpDataSourceResult httpDataSourceResult) {
+        _callback.onDataSourceConnectorComplete(httpDataSourceResult);
+    }
+
+    /**
+     * Called by AsyncTask to report progress change.
+     *
+     * @param progressCode The progress status code value defined in IDataSourceConnectorCallback.Progress.
+     */
+    private void onAsyncTaskUpdate(int progressCode) {
+        _callback.onProgressUpdate(progressCode);
     }
 
     /**

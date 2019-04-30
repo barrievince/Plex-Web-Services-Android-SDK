@@ -6,27 +6,25 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
-
-// TODO: Decide if to extend from Connector or use interface IHttpConnector
-
-public abstract class DataSource implements IHttpConnectorCallback {
+public abstract class DataSource implements IDataSourceConnectorCallback {
 
     private IDataSourceCallback _dataSourceCallback;
-    private IHttpConnector _connector;
+    private IDataSourceConnector _connector;
     private HttpDataSourceCredentials _credentials;
     private String _serverName;
     private boolean _useTestServer;
 
     public DataSource(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer) {
-        this(iDataSourceCallback, credentials, serverName, useTestServer, new HttpConnector());
+        this(iDataSourceCallback, credentials, serverName, useTestServer, new HttpDataSourceConnector());
     }
 
-    public DataSource(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer, IHttpConnector connector) {
+    public DataSource(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer, IDataSourceConnector connector) {
         _dataSourceCallback = iDataSourceCallback;
         _credentials = credentials;
         _serverName = serverName;
@@ -60,30 +58,29 @@ public abstract class DataSource implements IHttpConnectorCallback {
         return jsonRequest;
     }
 
-    public void onHttpDataSourceComplete(HttpDataSourceResult result) {
-        DataSourceResult dsResult;
+    // TODO: Document
+    public void onDataSourceConnectorComplete(HttpDataSourceResult result) {
+        if (_dataSourceCallback != null) {
+            DataSourceResult dsResult;
 
-        if (result.getHTTPResponseCode() == 200) {
-            dsResult = this.parseJsonResponse(result.getJsonResponse());
-        } else {
-            dsResult = this.parseJsonError(result.getJsonResponse());
+            if (result.getHTTPResponseCode() == 200) {
+                dsResult = this.parseJsonResponse(result.getJsonResponse());
+            } else {
+                dsResult = this.parseJsonError(result.getJsonResponse());
+            }
+
+            if (result.getException() != null) {
+                dsResult.setException(result.getException());
+            }
+
+            _dataSourceCallback.onDataSourceComplete(dsResult);
         }
-
-        if (result.getException() != null) {
-            dsResult.setException(result.getException());
-        }
-
-        _dataSourceCallback.onDataSourceComplete(dsResult);
     }
 
+    // TODO: Document
     public void onProgressUpdate(int progressCode) {
 
     }
-
-    public void onFinish() {
-
-    }
-
 
     /**
      * Parses the JSON returned from the http data source call.
@@ -153,6 +150,7 @@ public abstract class DataSource implements IHttpConnectorCallback {
         return dsResult;
     }
 
+    // TODO: Document
     private DataSourceResult parseJsonError(String jsonResponse) {
         DataSourceResult dsResult = new DataSourceResult();
         dsResult.setHttpDataSourceErrors(new Gson().fromJson(jsonResponse, HttpDataSourceErrors.class));
@@ -160,21 +158,19 @@ public abstract class DataSource implements IHttpConnectorCallback {
         return dsResult;
     }
 
-
-
-
     /* ****** ABSTRACT METHODS ****** **/
 
     /**
-     * Get the Plex data source key for the http data source call.
+     * Get the Plex data source key for the http data source.
      */
     protected abstract int getDataSourceKey();
 
     /**
      * Input parameters for the data source.
-     * The returned instance should extend BaseInput and add parameters, with field names that match the parameter tags.
+     * The returned instance should contain fields with field names that match the data source parameter tags.
+     * Used by GSON to serialize into JSON.
      *
-     * @return An extension of BaseInput that contains the input parameters.
+     * @return An instance that contains the input parameters for the data source.
      */
     protected abstract IBaseInput getBaseInput();
 
@@ -192,4 +188,21 @@ public abstract class DataSource implements IHttpConnectorCallback {
      * @param rowArray A row entry in the returned JSON.
      */
     protected abstract BaseRow parseRow(JsonArray rowArray);
+
+
+    /**
+     * Internal classes
+     */
+
+    /**
+     * A class used to serialize the request input parameters into the correct JSON structure.
+     */
+    class BaseInputs {
+        @SerializedName("inputs")
+        IBaseInput inputs;
+
+        BaseInputs(IBaseInput baseInput) {
+            inputs = baseInput;
+        }
+    }
 }
