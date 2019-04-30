@@ -1,5 +1,24 @@
-package com.plex.androidsdk.httpdatasources;
+/*
+ *  Copyright 2018 Plex Systems, Inc
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ *   associated documentation files (the "Software"), to deal in the Software without restriction,
+ *   including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ *   sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ *   furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all copies or
+ *   substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ *   BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ *   DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
 
+package com.plex.androidsdk.httpdatasources;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -20,6 +39,13 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
     private String _serverName;
     private boolean _useTestServer;
 
+    /**
+     * Default constructor
+     * @param iDataSourceCallback The caller who will receive the data source results.
+     * @param credentials The Plex credentials to use when connecting with the http data source server.
+     * @param serverName Based on data center data is hosted in. AH = cloud, US1/US2 = {customer code}.
+     * @param useTestServer If true, use the test api environment.
+     */
     public DataSource(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer) {
         this(iDataSourceCallback, credentials, serverName, useTestServer, new HttpDataSourceConnector());
     }
@@ -32,9 +58,8 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
         _connector = connector;
     }
 
-
     /**
-     * Execute the task
+     * Execute the data source
      */
     public void execute() {
         _connector.execute(this.getDataSourceKey(), _credentials, _serverName, _useTestServer, this.getJsonRequest(), this);
@@ -58,7 +83,9 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
         return jsonRequest;
     }
 
-    // TODO: Document
+    /**
+     * {@inheritDoc}
+     */
     public void onDataSourceConnectorComplete(HttpDataSourceResult result) {
         if (_dataSourceCallback != null) {
             DataSourceResult dsResult;
@@ -77,7 +104,9 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
         }
     }
 
-    // TODO: Document
+    /**
+     * {@inheritDoc}
+     */
     public void onProgressUpdate(int progressCode) {
 
     }
@@ -86,6 +115,7 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
      * Parses the JSON returned from the http data source call.
      *
      * @param jsonResponse The JSON string.
+     * @return An instance of DataSourceResult containing the results of the parsed json.
      */
     private DataSourceResult parseJsonResponse(String jsonResponse) {
 
@@ -150,7 +180,12 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
         return dsResult;
     }
 
-    // TODO: Document
+    /**
+     * Parses the error JSON returned from the http data source call.
+     *
+     * @param jsonResponse The error JSON string.
+     * @return An instance of DataSourceResult containing the results of the parsed json.
+     */
     private DataSourceResult parseJsonError(String jsonResponse) {
         DataSourceResult dsResult = new DataSourceResult();
         dsResult.setHttpDataSourceErrors(new Gson().fromJson(jsonResponse, HttpDataSourceErrors.class));
@@ -158,7 +193,7 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
         return dsResult;
     }
 
-    /* ****** ABSTRACT METHODS ****** **/
+    // ****** ABSTRACT METHODS ******
 
     /**
      * Get the Plex data source key for the http data source.
@@ -190,9 +225,7 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
     protected abstract BaseRow parseRow(JsonArray rowArray);
 
 
-    /**
-     * Internal classes
-     */
+    // ***** INTERNAL CLASSES *****
 
     /**
      * A class used to serialize the request input parameters into the correct JSON structure.

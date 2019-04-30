@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Plex Systems, Inc
+ * Copyright 2019 Plex Systems, Inc
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -15,6 +15,7 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
 
 package com.plex.androidsdk.httpdatasources.Inventory;
@@ -54,6 +55,16 @@ public class Container_Get1 extends DataSource {
         super(callback, credentials, serverName, test);
     }
 
+    /**
+     * Method to enable setting the Serial No input parameter.
+     *
+     * @param serialNo The Serial No to search for.
+     */
+    public void setSerialNo(String serialNo) {
+        inputParameters.setSerialNo(serialNo);
+    }
+
+    //region ABSTRACT METHOD IMPLEMENTATION
     /**
      * Get the data source key for Container_Get1.
      *
@@ -149,15 +160,7 @@ public class Container_Get1 extends DataSource {
 
         return row;
     }
-
-    /**
-     * Method to enable setting the Serial No input parameter.
-     *
-     * @param serialNo The Serial No to search for.
-     */
-    public void setSerialNo(String serialNo) {
-        inputParameters.setSerialNo(serialNo);
-    }
+    //endregion
 
     /**
      * Get the Serial No
@@ -169,7 +172,7 @@ public class Container_Get1 extends DataSource {
     }
 
 
-    /** ****** CLASSES ****** **/
+    //region INTERNAL CLASSES
 
     /**
      * Input parameters for data source call.
@@ -301,4 +304,5 @@ public class Container_Get1 extends DataSource {
             this.containerStatus = containerStatus;
         }
     }
+    //endregion
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Plex Systems, Inc
+ * Copyright 2019 Plex Systems, Inc
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -15,6 +15,7 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
 
 package com.plex.androidsdk.example;
@@ -70,10 +71,6 @@ public class ExampleActivity extends AppCompatActivity implements IDataSourceCal
     public void onSearch() {
         String userName = ((EditText) findViewById(R.id.userName)).getText().toString();
         String password = ((EditText) findViewById(R.id.password)).getText().toString();
-
-        // TODO: Remove before committing
-        userName = "bvinEdgeTestWs@plex.com";
-        password = "2ede038-6eb4-";
 
         if (userName.isEmpty() || password.isEmpty()) {
             ((TextView) findViewById(R.id.statusUpdate)).setText("User name and password can not be blank");
