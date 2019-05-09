@@ -27,31 +27,32 @@ import java.util.List;
  * A class used to hold the JSON response table object.
  */
 public class Table {
-    private List<String> columns;
-    private List<BaseRow> rows = new ArrayList<>();
-    private boolean rowLimitExceeded = false;
 
-    public List<String> getColumns() {
-        return columns;
-    }
+  private List<String> columns;
+  private List<BaseRow> rows = new ArrayList<>();
+  private boolean rowLimitExceeded = false;
 
-    public void setColumns(List<String> columns) {
-        this.columns = columns;
-    }
+  public List<String> getColumns() {
+    return columns;
+  }
 
-    public List<BaseRow> getRows() {
-        return rows;
-    }
+  public void setColumns(List<String> columns) {
+    this.columns = columns;
+  }
 
-    public void addRow(BaseRow row) {
-        rows.add(row);
-    }
+  public List<BaseRow> getRows() {
+    return rows;
+  }
 
-    public boolean isRowLimitExceeded() {
-        return rowLimitExceeded;
-    }
+  public void addRow(BaseRow row) {
+    rows.add(row);
+  }
 
-    public void setRowLimitExceeded(boolean rowLimitExceeded) {
-        this.rowLimitExceeded = rowLimitExceeded;
-    }
+  public boolean isRowLimitExceeded() {
+    return rowLimitExceeded;
+  }
+
+  public void setRowLimitExceeded(boolean rowLimitExceeded) {
+    this.rowLimitExceeded = rowLimitExceeded;
+  }
 }

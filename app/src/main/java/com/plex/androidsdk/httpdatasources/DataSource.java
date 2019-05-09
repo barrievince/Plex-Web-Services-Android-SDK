@@ -33,209 +33,209 @@ import java.util.List;
 
 public abstract class DataSource implements IDataSourceConnectorCallback {
 
-    private IDataSourceCallback _dataSourceCallback;
-    private IDataSourceConnector _connector;
-    private HttpDataSourceCredentials _credentials;
-    private String _serverName;
-    private boolean _useTestServer;
+  private IDataSourceCallback _dataSourceCallback;
+  private IDataSourceConnector _connector;
+  private HttpDataSourceCredentials _credentials;
+  private String _serverName;
+  private boolean _useTestServer;
 
-    /**
-     * Default constructor
-     * @param iDataSourceCallback The caller who will receive the data source results.
-     * @param credentials The Plex credentials to use when connecting with the http data source server.
-     * @param serverName Based on data center data is hosted in. AH = cloud, US1/US2 = {customer code}.
-     * @param useTestServer If true, use the test api environment.
-     */
-    public DataSource(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer) {
-        this(iDataSourceCallback, credentials, serverName, useTestServer, new HttpDataSourceConnector());
+  /**
+   * Default constructor
+   *
+   * @param iDataSourceCallback The caller who will receive the data source results.
+   * @param credentials The Plex credentials to use when connecting with the http data source server.
+   * @param serverName Based on data center data is hosted in. AH = cloud, US1/US2 = {customer code}.
+   * @param useTestServer If true, use the test api environment.
+   */
+  public DataSource(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer) {
+    this(iDataSourceCallback, credentials, serverName, useTestServer, new HttpDataSourceConnector());
+  }
+
+  public DataSource(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer,
+      IDataSourceConnector connector) {
+    _dataSourceCallback = iDataSourceCallback;
+    _credentials = credentials;
+    _serverName = serverName;
+    _useTestServer = useTestServer;
+    _connector = connector;
+  }
+
+  /**
+   * Execute the data source
+   */
+  public void execute() {
+    _connector.execute(this.getDataSourceKey(), _credentials, _serverName, _useTestServer, this.getJsonRequest(), this);
+  }
+
+  /**
+   * Helper method to convert the input parameters into JSON.
+   *
+   * @return The JSON request
+   */
+  private String getJsonRequest() {
+    String jsonRequest = null;
+    IBaseInput baseInput = this.getBaseInput();
+
+    if (baseInput != null) {
+      Gson gson = new Gson();
+      BaseInputs baseInputs = new BaseInputs(baseInput);
+      jsonRequest = gson.toJson(baseInputs);
     }
 
-    public DataSource(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer, IDataSourceConnector connector) {
-        _dataSourceCallback = iDataSourceCallback;
-        _credentials = credentials;
-        _serverName = serverName;
-        _useTestServer = useTestServer;
-        _connector = connector;
+    return jsonRequest;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public void onDataSourceConnectorComplete(HttpDataSourceResult result) {
+    if (_dataSourceCallback != null) {
+      DataSourceResult dsResult;
+
+      if (result.getHTTPResponseCode() == 200) {
+        dsResult = this.parseJsonResponse(result.getJsonResponse());
+      } else {
+        dsResult = this.parseJsonError(result.getJsonResponse());
+      }
+
+      if (result.getException() != null) {
+        dsResult.setException(result.getException());
+      }
+
+      _dataSourceCallback.onDataSourceComplete(dsResult);
     }
+  }
 
-    /**
-     * Execute the data source
-     */
-    public void execute() {
-        _connector.execute(this.getDataSourceKey(), _credentials, _serverName, _useTestServer, this.getJsonRequest(), this);
-    }
+  /**
+   * {@inheritDoc}
+   */
+  public void onProgressUpdate(int progressCode) {
 
-    /**
-     * Helper method to convert the input parameters into JSON.
-     *
-     * @return The JSON request
-     */
-    private String getJsonRequest() {
-        String jsonRequest = null;
-        IBaseInput baseInput = this.getBaseInput();
+  }
 
-        if (baseInput != null) {
-            Gson gson = new Gson();
-            BaseInputs baseInputs = new BaseInputs(baseInput);
-            jsonRequest = gson.toJson(baseInputs);
-        }
+  /**
+   * Parses the JSON returned from the http data source call.
+   *
+   * @param jsonResponse The JSON string.
+   * @return An instance of DataSourceResult containing the results of the parsed json.
+   */
+  private DataSourceResult parseJsonResponse(String jsonResponse) {
 
-        return jsonRequest;
-    }
+    DataSourceResult dsResult = new DataSourceResult();
 
-    /**
-     * {@inheritDoc}
-     */
-    public void onDataSourceConnectorComplete(HttpDataSourceResult result) {
-        if (_dataSourceCallback != null) {
-            DataSourceResult dsResult;
+    JsonObject jsonTree = new JsonParser().parse(jsonResponse).getAsJsonObject();
+    if (jsonTree.isJsonObject()) {
 
-            if (result.getHTTPResponseCode() == 200) {
-                dsResult = this.parseJsonResponse(result.getJsonResponse());
-            } else {
-                dsResult = this.parseJsonError(result.getJsonResponse());
+      JsonObject jsonObject = jsonTree.getAsJsonObject();
+
+      // Convert any outputs to an instance object
+      if (jsonObject.has("outputs")) {
+
+        JsonElement outputsElement = jsonObject.get("outputs");
+        dsResult.setOutputs(new Gson().fromJson(outputsElement, BaseOutputs.class));
+      }
+
+      // Convert any tables to instance objects
+      if (jsonObject.has("tables")) {
+        JsonArray tablesArray = jsonObject.getAsJsonArray("tables");
+        // tablesArray.size should always equal 1, as we will never actually return multiple result sets. The code works under that premise.
+        if (tablesArray.size() > 0) {
+          Table resultTable = new Table();
+
+          // Array item 0 will be the result set, so get is as a JsonObject
+          JsonObject tableObject = tablesArray.get(0).getAsJsonObject();
+
+          // Put the column names into a List
+          if (tableObject.has("columns")) {
+            Type listType = new TypeToken<List<String>>() {
+            }.getType();
+
+            List<String> columns = new Gson().fromJson(tableObject.get("columns"), listType);
+            resultTable.setColumns(columns);
+          }
+
+          // Parse the table rows
+          if (tableObject.has("rows")) {
+            JsonArray rowsArray = tableObject.get("rows").getAsJsonArray();
+
+            for (int i = 0; i < rowsArray.size(); ++i) {
+              JsonArray rowArray = rowsArray.get(i).getAsJsonArray();
+              BaseRow baseRow = parseRow(rowArray);
+              if (baseRow != null) {
+                resultTable.addRow(baseRow);
+              }
             }
+          }
 
-            if (result.getException() != null) {
-                dsResult.setException(result.getException());
-            }
+          if (tableObject.has("rowLimitExceeded")) {
+            resultTable.setRowLimitExceeded(tableObject.get("rowLimitExceeded").getAsBoolean());
+          }
 
-            _dataSourceCallback.onDataSourceComplete(dsResult);
+          dsResult.setTable(resultTable);
         }
+      }
+
+      // Every result will have "transaction no", so we don't even test. Just read it.
+      dsResult.setTransactionNo(jsonObject.get("transactionNo").getAsString());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void onProgressUpdate(int progressCode) {
+    return dsResult;
+  }
 
+  /**
+   * Parses the error JSON returned from the http data source call.
+   *
+   * @param jsonResponse The error JSON string.
+   * @return An instance of DataSourceResult containing the results of the parsed json.
+   */
+  private DataSourceResult parseJsonError(String jsonResponse) {
+    DataSourceResult dsResult = new DataSourceResult();
+    dsResult.setHttpDataSourceErrors(new Gson().fromJson(jsonResponse, HttpDataSourceErrors.class));
+
+    return dsResult;
+  }
+
+  // ****** ABSTRACT METHODS ******
+
+  /**
+   * Get the Plex data source key for the http data source.
+   */
+  protected abstract int getDataSourceKey();
+
+  /**
+   * Input parameters for the data source. The returned instance should contain fields with field names that match the data source parameter tags.
+   * Used by GSON to serialize into JSON.
+   *
+   * @return An instance that contains the input parameters for the data source.
+   */
+  protected abstract IBaseInput getBaseInput();
+
+  /**
+   * Output parameters of the http data source. Will return null if no output is expected.
+   *
+   * @return An extension of BaseOutputs that contains the fields of the output parameters.
+   */
+  protected abstract BaseOutputs getBaseOutput();
+
+  /**
+   * Parses a row entry for the returned JSON.
+   *
+   * @param rowArray A row entry in the returned JSON.
+   */
+  protected abstract BaseRow parseRow(JsonArray rowArray);
+
+  // ***** INTERNAL CLASSES *****
+
+  /**
+   * A class used to serialize the request input parameters into the correct JSON structure.
+   */
+  class BaseInputs {
+
+    @SerializedName("inputs")
+    IBaseInput inputs;
+
+    BaseInputs(IBaseInput baseInput) {
+      inputs = baseInput;
     }
-
-    /**
-     * Parses the JSON returned from the http data source call.
-     *
-     * @param jsonResponse The JSON string.
-     * @return An instance of DataSourceResult containing the results of the parsed json.
-     */
-    private DataSourceResult parseJsonResponse(String jsonResponse) {
-
-        DataSourceResult dsResult = new DataSourceResult();
-
-        JsonObject jsonTree = new JsonParser().parse(jsonResponse).getAsJsonObject();
-        if (jsonTree.isJsonObject()) {
-
-            JsonObject jsonObject = jsonTree.getAsJsonObject();
-
-            // Convert any outputs to an instance object
-            if (jsonObject.has("outputs")) {
-
-                JsonElement outputsElement = jsonObject.get("outputs");
-                dsResult.setOutputs(new Gson().fromJson(outputsElement, BaseOutputs.class));
-            }
-
-            // Convert any tables to instance objects
-            if (jsonObject.has("tables")) {
-                JsonArray tablesArray = jsonObject.getAsJsonArray("tables");
-                // tablesArray.size should always equal 1, as we will never actually return multiple result sets. The code works under that premise.
-                if (tablesArray.size() > 0) {
-                    Table resultTable = new Table();
-
-                    // Array item 0 will be the result set, so get is as a JsonObject
-                    JsonObject tableObject = tablesArray.get(0).getAsJsonObject();
-
-                    // Put the column names into a List
-                    if (tableObject.has("columns")) {
-                        Type listType = new TypeToken<List<String>>() {
-                        }.getType();
-
-                        List<String> columns = new Gson().fromJson(tableObject.get("columns"), listType);
-                        resultTable.setColumns(columns);
-                    }
-
-                    // Parse the table rows
-                    if (tableObject.has("rows")) {
-                        JsonArray rowsArray = tableObject.get("rows").getAsJsonArray();
-
-                        for (int i = 0; i < rowsArray.size(); ++i) {
-                            JsonArray rowArray = rowsArray.get(i).getAsJsonArray();
-                            BaseRow baseRow = parseRow(rowArray);
-                            if (baseRow != null) {
-                                resultTable.addRow(baseRow);
-                            }
-                        }
-                    }
-
-                    if (tableObject.has("rowLimitExceeded")) {
-                        resultTable.setRowLimitExceeded(tableObject.get("rowLimitExceeded").getAsBoolean());
-                    }
-
-                    dsResult.setTable(resultTable);
-                }
-            }
-
-            // Every result will have "transaction no", so we don't even test. Just read it.
-            dsResult.setTransactionNo(jsonObject.get("transactionNo").getAsString());
-        }
-
-        return dsResult;
-    }
-
-    /**
-     * Parses the error JSON returned from the http data source call.
-     *
-     * @param jsonResponse The error JSON string.
-     * @return An instance of DataSourceResult containing the results of the parsed json.
-     */
-    private DataSourceResult parseJsonError(String jsonResponse) {
-        DataSourceResult dsResult = new DataSourceResult();
-        dsResult.setHttpDataSourceErrors(new Gson().fromJson(jsonResponse, HttpDataSourceErrors.class));
-
-        return dsResult;
-    }
-
-    // ****** ABSTRACT METHODS ******
-
-    /**
-     * Get the Plex data source key for the http data source.
-     */
-    protected abstract int getDataSourceKey();
-
-    /**
-     * Input parameters for the data source.
-     * The returned instance should contain fields with field names that match the data source parameter tags.
-     * Used by GSON to serialize into JSON.
-     *
-     * @return An instance that contains the input parameters for the data source.
-     */
-    protected abstract IBaseInput getBaseInput();
-
-    /**
-     * Output parameters of the http data source.
-     * Will return null if no output is expected.
-     *
-     * @return An extension of BaseOutputs that contains the fields of the output parameters.
-     */
-    protected abstract BaseOutputs getBaseOutput();
-
-    /**
-     * Parses a row entry for the returned JSON.
-     *
-     * @param rowArray A row entry in the returned JSON.
-     */
-    protected abstract BaseRow parseRow(JsonArray rowArray);
-
-
-    // ***** INTERNAL CLASSES *****
-
-    /**
-     * A class used to serialize the request input parameters into the correct JSON structure.
-     */
-    class BaseInputs {
-        @SerializedName("inputs")
-        IBaseInput inputs;
-
-        BaseInputs(IBaseInput baseInput) {
-            inputs = baseInput;
-        }
-    }
+  }
 }

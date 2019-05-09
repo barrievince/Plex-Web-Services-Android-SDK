@@ -26,16 +26,17 @@ import com.google.gson.annotations.SerializedName;
  * Used with GSON to deserialize any errors JSON.
  */
 public class HttpDataSourceErrors {
-    @SerializedName("errors")
-    private HttpDataSourceError[] errors;
-    @SerializedName("transactionNo")
-    private String transactionNo;
 
-    public HttpDataSourceError[] getErrors() {
-        return errors;
-    }
+  @SerializedName("errors")
+  private HttpDataSourceError[] errors;
+  @SerializedName("transactionNo")
+  private String transactionNo;
 
-    public String getTransactionNo() {
-        return transactionNo;
-    }
+  public HttpDataSourceError[] getErrors() {
+    return errors;
+  }
+
+  public String getTransactionNo() {
+    return transactionNo;
+  }
 }

@@ -20,6 +20,10 @@
 
 package com.plex.androidsdk.httpdatasources;
 
+/**
+ * Implement to receive the callback from a data source call.
+ */
 public interface IDataSourceCallback {
-    void onDataSourceComplete(DataSourceResult dataSourceResult);
+
+  void onDataSourceComplete(DataSourceResult dataSourceResult);
 }

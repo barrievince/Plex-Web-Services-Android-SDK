@@ -24,27 +24,30 @@ package com.plex.androidsdk.httpdatasources;
  */
 public interface IDataSourceConnectorCallback {
 
-    /**
-     * Progress status codes
-     */
-    interface Progress {
-        int ERROR = -1;
-        int CONNECTION_SUCCESS = 0;
-        int REQUEST_SENT = 1;
-        int RESPONSE_RECEIVED = 2;
-        int PROCESSING_RESULT = 3;
-        int PROCESSING_RESULT_COMPLETE = 4;
-    }
+  /**
+   * Progress status codes
+   */
+  interface Progress {
 
-    /**
-     * Returns the result of the data source connector to the callback handler.
-     * @param result The result of the data source connector.
-     */
-    void onDataSourceConnectorComplete(HttpDataSourceResult result);
+    int ERROR = -1;
+    int CONNECTION_SUCCESS = 0;
+    int REQUEST_SENT = 1;
+    int RESPONSE_RECEIVED = 2;
+    int PROCESSING_RESULT = 3;
+    int PROCESSING_RESULT_COMPLETE = 4;
+  }
 
-    /**
-     * Indicate to callback handler any progress update.
-     * @param progressCode One of the constants defined in IDataSourceConnectorCallback.Progress.
-     */
-    void onProgressUpdate(int progressCode);
+  /**
+   * Returns the result of the data source connector to the callback handler.
+   *
+   * @param result The result of the data source connector.
+   */
+  void onDataSourceConnectorComplete(HttpDataSourceResult result);
+
+  /**
+   * Indicate to callback handler any progress update.
+   *
+   * @param progressCode One of the constants defined in IDataSourceConnectorCallback.Progress.
+   */
+  void onProgressUpdate(int progressCode);
 }

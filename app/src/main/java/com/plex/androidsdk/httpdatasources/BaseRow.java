@@ -26,4 +26,5 @@ package com.plex.androidsdk.httpdatasources;
  * Refer to http://doraprojects.net/blog/?p=2300 for Sql to Java type mapping.
  */
 public class BaseRow {
+
 }
