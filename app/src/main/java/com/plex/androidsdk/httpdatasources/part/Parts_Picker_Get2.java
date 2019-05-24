@@ -23,14 +23,12 @@ package com.plex.androidsdk.httpdatasources.part;
 
 import com.google.gson.JsonArray;
 import com.google.gson.annotations.SerializedName;
-import com.plex.androidsdk.httpdatasources.BaseOutputs;
 import com.plex.androidsdk.httpdatasources.BaseRow;
 import com.plex.androidsdk.httpdatasources.DataSource;
 import com.plex.androidsdk.httpdatasources.HttpDataSourceCredentials;
 import com.plex.androidsdk.httpdatasources.IBaseInput;
 import com.plex.androidsdk.httpdatasources.IDataSourceCallback;
 import com.plex.androidsdk.httpdatasources.IDataSourceConnector;
-import java.lang.reflect.Type;
 
 /**
  * Data source: Parts_Picker_Get2
@@ -90,16 +88,6 @@ public class Parts_Picker_Get2 extends DataSource {
     return inputParameters;
   }
 
-  /**
-   * Since this data source doesn't return any outputs, just return null.
-   *
-   * @return Null
-   */
-  @Override
-  protected Type getBaseOutputType() {
-    return null;
-  }
-
   @Override
   protected BaseRow parseRow(JsonArray rowArray) {
     Row row = null;
@@ -143,11 +131,11 @@ public class Parts_Picker_Get2 extends DataSource {
     @SerializedName("Part_No")
     private String partNo;
 
-    public String getPartNo() {
+    String getPartNo() {
       return partNo;
     }
 
-    public void setPartNo(String partNo) {
+    void setPartNo(String partNo) {
       this.partNo = partNo;
     }
   }

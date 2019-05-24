@@ -94,6 +94,24 @@ public class Part_Name_Output_Get extends DataSource {
     return null;
   }
 
+  /**
+   * Get the Part Key input parameter.
+   *
+   * @return The current Part Key.
+   */
+  public int getPartKey() {
+    return _inputParameters.getPartKey();
+  }
+
+  /**
+   * Set the Part Key input parameter.
+   *
+   * @param partKey The Part Key to get the name of.
+   */
+  public void setPartKey(int partKey) {
+    _inputParameters.setPartKey(partKey);
+  }
+
   //region INTERNAL CLASSES
 
   /**
@@ -104,16 +122,17 @@ public class Part_Name_Output_Get extends DataSource {
     @SerializedName("Part_Key")
     private int partKey;
 
-    public int getPartKey() {
+    int getPartKey() {
       return partKey;
     }
 
-    public void setPartKey(int partKey) {
+    void setPartKey(int partKey) {
       this.partKey = partKey;
     }
   }
 
-  private class OutputParameters extends BaseOutputs {
+  class OutputParameters extends BaseOutputs {
+
     public String Name;
   }
   //endregion

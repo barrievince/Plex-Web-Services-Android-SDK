@@ -33,6 +33,25 @@ import org.junit.Test;
 public class Part_Name_Output_GetTest {
 
   @Test
+  public void TestDatSourceKey() {
+    int expectedValue = 721;
+    Part_Name_Output_Get pnog = new Part_Name_Output_Get(null, null, null);
+    assertEquals(expectedValue, pnog.getDataSourceKey());
+  }
+
+  @Test
+  public void TestInputParameters() {
+    Part_Name_Output_Get pnog = new Part_Name_Output_Get(null, null, null);
+
+    int expectedInitialValue = 0;
+    assertEquals(expectedInitialValue, pnog.getPartKey());
+
+    int expectedValue = 1234;
+    pnog.setPartKey(expectedValue);
+    assertEquals(expectedValue, pnog.getPartKey());
+  }
+
+  @Test
   public void TestParsing() {
     TestConnector_Good ta = new TestConnector_Good();
     ta.Test();
@@ -51,7 +70,10 @@ public class Part_Name_Output_GetTest {
     @Override
     public void onDataSourceComplete(DataSourceResult dataSourceResult) {
       String expectedPartName = "Rear Suspension Arm";
-      assertEquals(expectedPartName, "Hello");
+
+      Part_Name_Output_Get.OutputParameters outputParameters = (Part_Name_Output_Get.OutputParameters) dataSourceResult.getOutputs();
+
+      assertEquals(expectedPartName, outputParameters.Name);
     }
   }
 
