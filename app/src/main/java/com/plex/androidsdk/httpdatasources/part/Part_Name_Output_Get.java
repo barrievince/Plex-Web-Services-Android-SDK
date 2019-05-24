@@ -29,6 +29,7 @@ import com.plex.androidsdk.httpdatasources.HttpDataSourceCredentials;
 import com.plex.androidsdk.httpdatasources.IBaseInput;
 import com.plex.androidsdk.httpdatasources.IDataSourceCallback;
 import com.plex.androidsdk.httpdatasources.IDataSourceConnector;
+import java.lang.reflect.Type;
 
 /**
  * Data source: Part_Name_Output_get
@@ -61,22 +62,33 @@ public class Part_Name_Output_Get extends DataSource {
     super(iDataSourceCallback, credentials, serverName, useTestServer, connector);
   }
 
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected int getDataSourceKey() {
     return 721;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected IBaseInput getBaseInput() {
     return _inputParameters;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  protected BaseOutputs getBaseOutput() {
-    return new OutputParameters();
+  protected Type getBaseOutputType() {
+    return Part_Name_Output_Get.OutputParameters.class;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected BaseRow parseRow(JsonArray rowArray) {
     return null;
@@ -102,7 +114,7 @@ public class Part_Name_Output_Get extends DataSource {
   }
 
   private class OutputParameters extends BaseOutputs {
-    public String Part_Name;
+    public String Name;
   }
   //endregion
 }

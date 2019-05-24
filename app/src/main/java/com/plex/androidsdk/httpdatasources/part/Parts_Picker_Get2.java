@@ -30,10 +30,10 @@ import com.plex.androidsdk.httpdatasources.HttpDataSourceCredentials;
 import com.plex.androidsdk.httpdatasources.IBaseInput;
 import com.plex.androidsdk.httpdatasources.IDataSourceCallback;
 import com.plex.androidsdk.httpdatasources.IDataSourceConnector;
+import java.lang.reflect.Type;
 
 /**
  * Data source: Parts_Picker_Get2
- *
  */
 public class Parts_Picker_Get2 extends DataSource {
 
@@ -56,7 +56,8 @@ public class Parts_Picker_Get2 extends DataSource {
   /**
    * {@inheritDoc}
    */
-  protected Parts_Picker_Get2(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer,
+  protected Parts_Picker_Get2(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName,
+      boolean useTestServer,
       IDataSourceConnector connector) {
     super(iDataSourceCallback, credentials, serverName, useTestServer, connector);
   }
@@ -89,8 +90,13 @@ public class Parts_Picker_Get2 extends DataSource {
     return inputParameters;
   }
 
+  /**
+   * Since this data source doesn't return any outputs, just return null.
+   *
+   * @return Null
+   */
   @Override
-  protected BaseOutputs getBaseOutput() {
+  protected Type getBaseOutputType() {
     return null;
   }
 

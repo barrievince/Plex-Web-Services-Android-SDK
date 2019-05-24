@@ -29,6 +29,7 @@ import com.plex.androidsdk.httpdatasources.IBaseInput;
 import com.plex.androidsdk.httpdatasources.IDataSourceCallback;
 import com.plex.androidsdk.httpdatasources.HttpDataSourceCredentials;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 
 /**
@@ -102,7 +103,7 @@ public class Container_Get1 extends DataSource {
    * @return Null
    */
   @Override
-  protected BaseOutputs getBaseOutput() {
+  protected Type getBaseOutputType() {
     return null;
   }
 
