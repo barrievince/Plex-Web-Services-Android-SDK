@@ -40,14 +40,14 @@ public class Parts_Picker_Get2 extends DataSource {
   /**
    * {@inheritDoc} Shortcut constructor for production.
    */
-  public Parts_Picker_Get2(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName) {
+  Parts_Picker_Get2(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName) {
     this(iDataSourceCallback, credentials, serverName, false);
   }
 
   /**
    * {@inheritDoc}
    */
-  public Parts_Picker_Get2(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer) {
+  Parts_Picker_Get2(IDataSourceCallback iDataSourceCallback, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer) {
     super(iDataSourceCallback, credentials, serverName, useTestServer);
   }
 
@@ -97,8 +97,8 @@ public class Parts_Picker_Get2 extends DataSource {
       row = new Row();
 
       // Loop through all the fields and assign the data to Row.
-      for (int i = 0; i < rowArray.size(); ++i) {
-        switch (i) {
+      for (int columnIndex = 0; columnIndex < rowArray.size(); ++columnIndex) {
+        switch (columnIndex) {
           case 0: // Part Key
             row.setPartKey(rowArray.get(0).getAsInt());
             break;
