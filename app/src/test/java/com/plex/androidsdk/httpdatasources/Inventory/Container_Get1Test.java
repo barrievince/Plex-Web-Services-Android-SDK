@@ -42,6 +42,32 @@ public class Container_Get1Test {
     assertEquals(expected, output);
   }
 
+  /**
+   * Test setting and getting serial no.
+   */
+  @Test
+  public void testSerialNo() {
+    String expectedValue = "S123456";
+
+    Container_Get1 cg1 = new Container_Get1(null, null, null);
+    cg1.setSerialNo(expectedValue);
+
+    assertEquals(expectedValue, cg1.getSerialNo());
+  }
+
+  /**
+   * Test JSON input parameters format
+   */
+  @Test
+  public void testInputParameterJSON() {
+    String serialNo = "S123456";
+    String expectedValue = "{\"Serial_No\":\"S123456\"}";
+
+    Container_Get1 cgl = new Container_Get1(null, null, null);
+    cgl.setSerialNo("S123456");
+    assertEquals(expectedValue, cgl.getJsonRequest());
+  }
+
 
   /**
    * Test parsing a row.
@@ -82,19 +108,6 @@ public class Container_Get1Test {
     assertEquals(expectedValue, row.getOperationKey());
     assertEquals(expectedValue, row.getReworkOperation());
 
-  }
-
-  /**
-   * Test setting and getting serial no.
-   */
-  @Test
-  public void testSerialNo() {
-    String expectedValue = "S123456";
-
-    Container_Get1 cg1 = new Container_Get1(null, null, null);
-    cg1.setSerialNo(expectedValue);
-
-    assertEquals(expectedValue, cg1.getSerialNo());
   }
 
   /**

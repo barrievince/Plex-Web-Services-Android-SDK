@@ -71,14 +71,13 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
    *
    * @return The JSON request
    */
-  private String getJsonRequest() {
+  public String getJsonRequest() {
     String jsonRequest = null;
     IBaseInput baseInput = this.getBaseInput();
 
     if (baseInput != null) {
       Gson gson = new Gson();
-      BaseInputs baseInputs = new BaseInputs(baseInput);
-      jsonRequest = gson.toJson(baseInputs);
+      jsonRequest = gson.toJson(baseInput);
     }
 
     return jsonRequest;

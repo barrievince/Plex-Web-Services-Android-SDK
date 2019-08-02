@@ -28,6 +28,7 @@ import com.plex.androidsdk.httpdatasources.HttpDataSourceResult;
 import com.plex.androidsdk.httpdatasources.IDataSourceCallback;
 import com.plex.androidsdk.httpdatasources.IDataSourceConnector;
 import com.plex.androidsdk.httpdatasources.IDataSourceConnectorCallback;
+import com.plex.androidsdk.httpdatasources.Inventory.Container_Get1;
 import org.junit.Test;
 
 public class Part_Name_Output_GetTest {
@@ -49,6 +50,19 @@ public class Part_Name_Output_GetTest {
     int expectedValue = 1234;
     pnog.setPartKey(expectedValue);
     assertEquals(expectedValue, pnog.getPartKey());
+  }
+
+  /**
+   * Test JSON input parameters format
+   */
+  @Test
+  public void testInputParameterJSON() {
+    int partKey = 1234;
+    String expectedValue = "{\"Part_Key\":1234}";
+
+    Part_Name_Output_Get pnog = new Part_Name_Output_Get(null, null, null);
+    pnog.setPartKey(partKey);
+    assertEquals(expectedValue, pnog.getJsonRequest());
   }
 
   @Test

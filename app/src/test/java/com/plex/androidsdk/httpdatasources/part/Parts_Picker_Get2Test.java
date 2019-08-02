@@ -59,6 +59,19 @@ public class Parts_Picker_Get2Test {
   }
 
   /**
+   * Test JSON input parameters format
+   */
+  @Test
+  public void testInputParameterJSON() {
+    String partNo = "4709-A";
+    String expectedValue = "{\"Part_No\":\"4709-A\"}";
+
+    Parts_Picker_Get2 ppg = new Parts_Picker_Get2(null, null, null);
+    ppg.setPartNo(partNo);
+    assertEquals(expectedValue, ppg.getJsonRequest());
+  }
+
+  /**
    * Test parsing a row
    */
   @Test
