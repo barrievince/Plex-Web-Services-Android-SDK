@@ -20,15 +20,13 @@
 
 package com.plex.androidsdk.httpdatasources.Inventory;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
-
-import org.junit.Test;
-
-import java.math.BigDecimal;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.math.BigDecimal;
+import org.junit.Test;
 
 public class Container_Get1Test {
 
@@ -64,7 +62,7 @@ public class Container_Get1Test {
     String expectedValue = "{\"Serial_No\":\"S123456\"}";
 
     Container_Get1 cgl = new Container_Get1(null, null, null);
-    cgl.setSerialNo("S123456");
+    cgl.setSerialNo(serialNo);
     assertEquals(expectedValue, cgl.getJsonRequest());
   }
 
@@ -75,7 +73,7 @@ public class Container_Get1Test {
   @Test
   public void parseRow_Good() {
     ExpectedGoodRow expectedData = new ExpectedGoodRow();
-    JsonArray inputData = this.getGoodRowJsonArray();
+    JsonObject inputData = this.getGoodRowJsonArray();
 
     Container_Get1.Row row = (Container_Get1.Row) new Container_Get1(null, null, null).parseRow(inputData);
 
@@ -92,55 +90,94 @@ public class Container_Get1Test {
     assertEquals(expectedData.ReworkOperation, row.getReworkOperation());
     assertEquals(expectedData.SpecialInstructions, row.getSpecialInstructions());
     assertEquals(expectedData.DefectType, row.getDefectType());
+
   }
 
   /**
-   * Test parsing a row containing nulls.
+   * Test parsing a row containing a null for OperationKey.
    */
   @Test
-  public void parseRow_WithNulls() {
-    int expectedValue = 0;
-    JsonArray inputData = this.getNullRowJsonArray();
+  public void parseRow_WithNull() {
+    ExpectedGoodRowWithNulls expectedData = new ExpectedGoodRowWithNulls();
+    JsonObject inputData = this.getGoodRowWithNullJsonArray();
 
     Container_Get1.Row row = (Container_Get1.Row) new Container_Get1(null, null, null).parseRow(inputData);
 
     assertNotNull(row);
-    assertEquals(expectedValue, row.getOperationKey());
-    assertEquals(expectedValue, row.getReworkOperation());
+    assertEquals(expectedData.PartNoRevision, row.getPartNoRevision());
+    assertEquals(expectedData.Name, row.getName());
+    assertEquals(expectedData.PartKey, row.getPartKey());
+    assertEquals(expectedData.OperationCode, row.getOperationCode());
+    assertEquals(expectedData.Quantity, row.getQuantity());
+    assertEquals(expectedData.ContainerStatus, row.getContainerStatus());
+    assertEquals(expectedData.Location, row.getLocation());
+    assertEquals(expectedData.Note, row.getNote());
+    assertEquals(expectedData.OperationKey, row.getOperationKey());
+    assertEquals(expectedData.ReworkOperation, row.getReworkOperation());
+    assertEquals(expectedData.SpecialInstructions, row.getSpecialInstructions());
+    assertEquals(expectedData.DefectType, row.getDefectType());
 
   }
 
   /**
-   * Returns a valid, non-null, JsonArray of a row.
+   * Returns a valid, non-null, JsonObject of a row.
    *
-   * @return JsonArray A row of data.
+   * @return JsonObject A row of data.
    */
-  private JsonArray getGoodRowJsonArray() {
-    String testRow = " [\"Part No Revision Value\",\n" +
-        "\"Part Name Value\",\n" +
-        "99999,\n" +
-        "\"Operation Code Value\",\n" +
-        "99999,\n" +
-        "\"Container Status Value\",\n" +
-        "\"Location Value\",\n" +
-        "\"Note Value\",\n" +
-        "99999,\n" +
-        "99999,\n" +
-        "\"Special Instructions Value\",\n" +
-        "\"Defect Type Value\"]";
+  private JsonObject getGoodRowJsonArray() {
+    String someObject = "{\n"
+        + "            \"Part_No_Revision\": \"Part No Revision Value\",\n"
+        + "            \"Name\": \"Part Name Value\",\n"
+        + "            \"Part_Key\": 99999,\n"
+        + "            \"Operation_Code\": \"Operation Code Value\",\n"
+        + "            \"Quantity\": 99999.0000000000000000000,\n"
+        + "            \"Container_Status\": \"Container Status Value\",\n"
+        + "            \"Location\": \"Location Value\",\n"
+        + "            \"Note\": \"Note Value\",\n"
+        + "            \"Operation_Key\": 99999,\n"
+        + "            \"Rework_Operation\": 99999,\n"
+        + "            \"Special_Instructions\": \"Special Instructions Value\",\n"
+        + "            \"Defect_Type\": \"Defect Type Value\"\n"
+        + "        }";
 
-    return new JsonParser().parse(testRow).getAsJsonArray();
+    return new JsonParser().parse(someObject).getAsJsonObject();
   }
+
+  /**
+   * Returns a valid, non-null, JsonObject of a row.
+   *
+   * @return JsonObject A row of data.
+   */
+  private JsonObject getGoodRowWithNullJsonArray() {
+    String someObject = "{\n"
+        + "            \"Part_No_Revision\": \"Part No Revision Value\",\n"
+        + "            \"Name\": \"Part Name Value\",\n"
+        + "            \"Part_Key\": 99999,\n"
+        + "            \"Operation_Code\": \"Operation Code Value\",\n"
+        + "            \"Quantity\": 99999.0000000000000000000,\n"
+        + "            \"Container_Status\": \"Container Status Value\",\n"
+        + "            \"Location\": \"Location Value\",\n"
+        + "            \"Note\": \"Note Value\",\n"
+        + "            \"Operation_Key\": 99999,\n"
+        + "            \"Rework_Operation\": null,\n"
+        + "            \"Special_Instructions\": \"Special Instructions Value\",\n"
+        + "            \"Defect_Type\": \"Defect Type Value\"\n"
+        + "        }";
+
+    return new JsonParser().parse(someObject).getAsJsonObject();
+  }
+
 
   /**
    * A class containing the expected data values for getGoodRowJsonArray.
    */
   private class ExpectedGoodRow {
+
     String PartNoRevision = "Part No Revision Value";
     String Name = "Part Name Value";
     int PartKey = 99999;
     String OperationCode = "Operation Code Value";
-    BigDecimal Quantity = BigDecimal.valueOf(99999);
+    BigDecimal Quantity = new BigDecimal("99999.0000000000000000000");
     String ContainerStatus = "Container Status Value";
     String Location = "Location Value";
     String Note = "Note Value";
@@ -151,24 +188,21 @@ public class Container_Get1Test {
   }
 
   /**
-   * Returns a valid JsonArray of a row containing nulls.
-   *
-   * @return JsonArray A row of data.
+   * A class containing the expected data values for getGoodRowJsonArray.
    */
-  private JsonArray getNullRowJsonArray() {
-    String testRow = " [\"Part No Revision Value\",\n" +
-        "\"Part Name Value\",\n" +
-        "99999,\n" +
-        "\"Operation Code Value\",\n" +
-        "99999,\n" +
-        "\"Container Status Value\",\n" +
-        "\"Location Value\",\n" +
-        "\"Note Value\",\n" +
-        "null,\n" +
-        "null,\n" +
-        "\"Special Instructions Value\",\n" +
-        "\"Defect Type Value\"]";
+  private class ExpectedGoodRowWithNulls {
 
-    return new JsonParser().parse(testRow).getAsJsonArray();
+    String PartNoRevision = "Part No Revision Value";
+    String Name = "Part Name Value";
+    int PartKey = 99999;
+    String OperationCode = "Operation Code Value";
+    BigDecimal Quantity = new BigDecimal("99999.0000000000000000000");
+    String ContainerStatus = "Container Status Value";
+    String Location = "Location Value";
+    String Note = "Note Value";
+    int OperationKey = 99999;
+    int ReworkOperation = 0;
+    String SpecialInstructions = "Special Instructions Value";
+    String DefectType = "Defect Type Value";
   }
 }

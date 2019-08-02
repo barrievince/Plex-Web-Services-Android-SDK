@@ -20,13 +20,21 @@
 
 package com.plex.androidsdk.httpdatasources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A data class returned to the DataSource instance on
  */
 public class DataSourceResult {
 
   private BaseOutputs outputs;
+  //TODO: Obsolete. To be removed
   private Table table;
+
+  private List<BaseRow> rows = new ArrayList<>();
+  private boolean rowLimitExceeded = false;
+
   private String transactionNo;
   private HttpDataSourceErrors httpDataSourceErrors;
   private Exception exception;
@@ -57,13 +65,33 @@ public class DataSourceResult {
     this.outputs = outputs;
   }
 
+  //TODO: Obsolete. To be removed
   public Table getTable() {
     return table;
   }
 
+  //TODO: Obsolete. To be removed
   public void setTable(Table table) {
     this.table = table;
   }
+
+
+  public List<BaseRow> getRows() {
+    return rows;
+  }
+
+  public void addRow(BaseRow row) {
+    rows.add(row);
+  }
+
+  public boolean isRowLimitExceeded() {
+    return rowLimitExceeded;
+  }
+
+  public void setRowLimitExceeded(boolean rowLimitExceeded) {
+    this.rowLimitExceeded = rowLimitExceeded;
+  }
+
 
   public String getTransactionNo() {
     return transactionNo;

@@ -26,6 +26,7 @@ import java.util.List;
 /**
  * A class used to hold the JSON response table object.
  */
+//TODO: Obsolete. To be removed
 public class Table {
 
   private List<String> columns;
