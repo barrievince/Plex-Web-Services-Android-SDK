@@ -100,7 +100,7 @@ public class Part_Name_Output_GetTest {
     public void execute(int dataSourceKey, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer, String jsonRequest,
         IDataSourceConnectorCallback callback) {
 
-      String jsonResponse = "{\"outputs\":{\"Name\":\"Rear Suspension Arm\"},\"tables\":[],\"transactionNo\":\"3836078\"}";
+      String jsonResponse = "{\"outputs\":{\"Name\":\"Rear Suspension Arm\"},\"rows\":[],\"rowLimitExceeded\":false,\"transactionNo\":\"3836083\"}";
 
       HttpDataSourceResult result = new HttpDataSourceResult(jsonResponse, 200);
 

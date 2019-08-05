@@ -26,6 +26,7 @@ import com.plex.androidsdk.httpdatasources.DataSource;
 import com.plex.androidsdk.httpdatasources.HttpDataSourceCredentials;
 import com.plex.androidsdk.httpdatasources.IBaseInput;
 import com.plex.androidsdk.httpdatasources.IDataSourceCallback;
+import com.plex.androidsdk.httpdatasources.IDataSourceConnector;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 
@@ -51,6 +52,13 @@ public class Container_Get1 extends DataSource {
    */
   public Container_Get1(IDataSourceCallback callback, HttpDataSourceCredentials credentials, String serverName, boolean test) {
     super(callback, credentials, serverName, test);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  protected Container_Get1(IDataSourceCallback callback, HttpDataSourceCredentials credentials, String serverName, boolean test, IDataSourceConnector connector) {
+    super(callback, credentials, serverName, test, connector);
   }
 
   /**

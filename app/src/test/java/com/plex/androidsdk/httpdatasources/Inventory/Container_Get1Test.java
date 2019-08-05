@@ -26,6 +26,12 @@ import static org.junit.Assert.assertNotNull;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.plex.androidsdk.httpdatasources.DataSourceResult;
+import com.plex.androidsdk.httpdatasources.HttpDataSourceCredentials;
+import com.plex.androidsdk.httpdatasources.HttpDataSourceResult;
+import com.plex.androidsdk.httpdatasources.IDataSourceCallback;
+import com.plex.androidsdk.httpdatasources.IDataSourceConnector;
+import com.plex.androidsdk.httpdatasources.IDataSourceConnectorCallback;
 import java.math.BigDecimal;
 import org.junit.Test;
 
@@ -129,15 +135,15 @@ public class Container_Get1Test {
    */
   private JsonObject getGoodRowJsonArray() {
     String someObject = "{\n"
-        + "            \"Part_No_Revision\": \"Part No Revision Value\",\n"
-        + "            \"Name\": \"Part Name Value\",\n"
-        + "            \"Part_Key\": 99999,\n"
-        + "            \"Operation_Code\": \"Operation Code Value\",\n"
-        + "            \"Quantity\": 99999.0000000000000000000,\n"
-        + "            \"Container_Status\": \"Container Status Value\",\n"
-        + "            \"Location\": \"Location Value\",\n"
-        + "            \"Note\": \"Note Value\",\n"
-        + "            \"Operation_Key\": 99999,\n"
+        + "            \"Part_No_Revision\": \"4799-AAA\",\n"
+        + "            \"Name\": \"Rear Suspension Arm\",\n"
+        + "            \"Part_Key\": 837,\n"
+        + "            \"Operation_Code\": \"Cut and Blank\",\n"
+        + "            \"Quantity\": 723.0000000000000000000,\n"
+        + "            \"Container_Status\": \"OK\",\n"
+        + "            \"Location\": \"Press 16\",\n"
+        + "            \"Note\": \"Some Note\",\n"
+        + "            \"Operation_Key\": 230,\n"
         + "            \"Rework_Operation\": 99999,\n"
         + "            \"Special_Instructions\": \"Special Instructions Value\",\n"
         + "            \"Defect_Type\": \"Defect Type Value\"\n"
@@ -152,16 +158,17 @@ public class Container_Get1Test {
    * @return JsonObject A row of data.
    */
   private JsonObject getGoodRowWithNullJsonArray() {
+
     String someObject = "{\n"
-        + "            \"Part_No_Revision\": \"Part No Revision Value\",\n"
-        + "            \"Name\": \"Part Name Value\",\n"
-        + "            \"Part_Key\": 99999,\n"
-        + "            \"Operation_Code\": \"Operation Code Value\",\n"
-        + "            \"Quantity\": 99999.0000000000000000000,\n"
-        + "            \"Container_Status\": \"Container Status Value\",\n"
-        + "            \"Location\": \"Location Value\",\n"
-        + "            \"Note\": \"Note Value\",\n"
-        + "            \"Operation_Key\": 99999,\n"
+        + "            \"Part_No_Revision\": \"4799-AAA\",\n"
+        + "            \"Name\": \"Rear Suspension Arm\",\n"
+        + "            \"Part_Key\": 837,\n"
+        + "            \"Operation_Code\": \"Cut and Blank\",\n"
+        + "            \"Quantity\": 723.0000000000000000000,\n"
+        + "            \"Container_Status\": \"OK\",\n"
+        + "            \"Location\": \"Press 16\",\n"
+        + "            \"Note\": \"Some Note\",\n"
+        + "            \"Operation_Key\": 230,\n"
         + "            \"Rework_Operation\": null,\n"
         + "            \"Special_Instructions\": \"Special Instructions Value\",\n"
         + "            \"Defect_Type\": \"Defect Type Value\"\n"
@@ -170,21 +177,20 @@ public class Container_Get1Test {
     return new JsonParser().parse(someObject).getAsJsonObject();
   }
 
-
   /**
    * A class containing the expected data values for getGoodRowJsonArray.
    */
   private class ExpectedGoodRow {
 
-    String PartNoRevision = "Part No Revision Value";
-    String Name = "Part Name Value";
-    int PartKey = 99999;
-    String OperationCode = "Operation Code Value";
-    BigDecimal Quantity = new BigDecimal("99999.0000000000000000000");
-    String ContainerStatus = "Container Status Value";
-    String Location = "Location Value";
-    String Note = "Note Value";
-    int OperationKey = 99999;
+    String PartNoRevision = "4799-AAA";
+    String Name = "Rear Suspension Arm";
+    int PartKey = 837;
+    String OperationCode = "Cut and Blank";
+    BigDecimal Quantity = new BigDecimal("723.0000000000000000000");
+    String ContainerStatus = "OK";
+    String Location = "Press 16";
+    String Note = "Some Note";
+    int OperationKey = 230;
     int ReworkOperation = 99999;
     String SpecialInstructions = "Special Instructions Value";
     String DefectType = "Defect Type Value";
@@ -195,17 +201,67 @@ public class Container_Get1Test {
    */
   private class ExpectedGoodRowWithNulls {
 
-    String PartNoRevision = "Part No Revision Value";
-    String Name = "Part Name Value";
-    int PartKey = 99999;
-    String OperationCode = "Operation Code Value";
-    BigDecimal Quantity = new BigDecimal("99999.0000000000000000000");
-    String ContainerStatus = "Container Status Value";
-    String Location = "Location Value";
-    String Note = "Note Value";
-    int OperationKey = 99999;
+    String PartNoRevision = "4799-AAA";
+    String Name = "Rear Suspension Arm";
+    int PartKey = 837;
+    String OperationCode = "Cut and Blank";
+    BigDecimal Quantity = new BigDecimal("723.0000000000000000000");
+    String ContainerStatus = "OK";
+    String Location = "Press 16";
+    String Note = "Some Note";
+    int OperationKey = 230;
     int ReworkOperation = 0;
     String SpecialInstructions = "Special Instructions Value";
     String DefectType = "Defect Type Value";
+  }
+
+  @Test
+  public void TestParsing() {
+    TestConnection_Good tcg = new TestConnection_Good();
+    tcg.Test();;
+  }
+
+  private class TestConnection_Good implements IDataSourceCallback {
+
+    public void Test() {
+      Container_Get1 cg = new Container_Get1(this, null, null, false, new TestConnector());
+      cg.execute();
+    }
+
+    @Override
+    public void onDataSourceComplete(DataSourceResult dataSourceResult) {
+      int expectedRowSize = 1;
+      ExpectedGoodRowWithNulls expectedData = new ExpectedGoodRowWithNulls();
+
+      assertEquals(expectedRowSize, dataSourceResult.getRows().size());
+
+      Container_Get1.Row row = (Container_Get1.Row) dataSourceResult.getRows().get(0);
+
+      assertEquals(expectedData.PartNoRevision, row.getPartNoRevision());
+      assertEquals(expectedData.Name, row.getName());
+      assertEquals(expectedData.PartKey, row.getPartKey());
+      assertEquals(expectedData.OperationCode, row.getOperationCode());
+      assertEquals(expectedData.Quantity, row.getQuantity());
+      assertEquals(expectedData.ContainerStatus, row.getContainerStatus());
+      assertEquals(expectedData.Location, row.getLocation());
+      assertEquals(expectedData.Note, row.getNote());
+      assertEquals(expectedData.OperationKey, row.getOperationKey());
+      assertEquals(expectedData.ReworkOperation, row.getReworkOperation());
+      assertEquals(expectedData.SpecialInstructions, row.getSpecialInstructions());
+      assertEquals(expectedData.DefectType, row.getDefectType());
+
+    }
+  }
+
+  // Test connector
+  private class TestConnector implements IDataSourceConnector {
+
+    @Override
+    public void execute(int dataSourceKey, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer, String jsonRequest,
+        IDataSourceConnectorCallback callback) {
+      String jsonResponse = "{\"outputs\":{},\"rows\":[{\"Part_No_Revision\":\"4799-AAA\",\"Name\":\"Rear Suspension Arm\",\"Part_Key\":837,\"Operation_Code\":\"Cut and Blank\",\"Quantity\":723.0000000000000000000,\"Container_Status\":\"OK\",\"Location\":\"Press 16\",\"Note\":\"Some Note\",\"Operation_Key\":230,\"Rework_Operation\":null,\"Special_Instructions\":\"Special Instructions Value\",\"Defect_Type\":\"Defect Type Value\"}],\"rowLimitExceeded\":false,\"transactionNo\":\"3836084\"}";
+      HttpDataSourceResult result = new HttpDataSourceResult(jsonResponse, 200);
+      callback.onDataSourceConnectorComplete(result);
+    }
   }
 }

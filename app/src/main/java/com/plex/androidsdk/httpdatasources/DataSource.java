@@ -122,8 +122,6 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
     JsonObject jsonObject = new JsonParser().parse(jsonResponse).getAsJsonObject();
     if (jsonObject.isJsonObject()) {
 
-//      JsonObject jsonObject = jsonTree.getAsJsonObject();
-
       // Convert any outputs to an instance object unless an output type is not defined.
       if (jsonObject.has("outputs") && this.getOutputType() != null ) {
 
