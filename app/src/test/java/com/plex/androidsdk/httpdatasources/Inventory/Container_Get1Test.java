@@ -23,6 +23,7 @@ package com.plex.androidsdk.httpdatasources.Inventory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.math.BigDecimal;
@@ -75,7 +76,8 @@ public class Container_Get1Test {
     ExpectedGoodRow expectedData = new ExpectedGoodRow();
     JsonObject inputData = this.getGoodRowJsonArray();
 
-    Container_Get1.Row row = (Container_Get1.Row) new Container_Get1(null, null, null).parseRow(inputData);
+    Gson gson = new Gson();
+    Container_Get1.Row row = gson.fromJson(inputData, Container_Get1.Row.class);
 
     assertNotNull(row);
     assertEquals(expectedData.PartNoRevision, row.getPartNoRevision());
@@ -101,7 +103,8 @@ public class Container_Get1Test {
     ExpectedGoodRowWithNulls expectedData = new ExpectedGoodRowWithNulls();
     JsonObject inputData = this.getGoodRowWithNullJsonArray();
 
-    Container_Get1.Row row = (Container_Get1.Row) new Container_Get1(null, null, null).parseRow(inputData);
+    Gson gson = new Gson();
+    Container_Get1.Row row = gson.fromJson(inputData, Container_Get1.Row.class);
 
     assertNotNull(row);
     assertEquals(expectedData.PartNoRevision, row.getPartNoRevision());

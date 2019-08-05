@@ -25,7 +25,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.annotations.SerializedName;
 import java.lang.reflect.Type;
 
 public abstract class DataSource implements IDataSourceConnectorCallback {
@@ -35,6 +34,7 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
   private HttpDataSourceCredentials _credentials;
   private String _serverName;
   private boolean _useTestServer;
+  private Gson _rowGson;
 
   /**
    * Default constructor
@@ -119,17 +119,16 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
 
     DataSourceResult dsResult = new DataSourceResult();
 
-    JsonObject jsonTree = new JsonParser().parse(jsonResponse).getAsJsonObject();
-    if (jsonTree.isJsonObject()) {
+    JsonObject jsonObject = new JsonParser().parse(jsonResponse).getAsJsonObject();
+    if (jsonObject.isJsonObject()) {
 
-      JsonObject jsonObject = jsonTree.getAsJsonObject();
+//      JsonObject jsonObject = jsonTree.getAsJsonObject();
 
-      // Convert any outputs to an instance object
-      if (jsonObject.has("outputs")) {
+      // Convert any outputs to an instance object unless an output type is not defined.
+      if (jsonObject.has("outputs") && this.getOutputType() != null ) {
 
         JsonElement outputsElement = jsonObject.get("outputs");
-        dsResult.setOutputs(new Gson().fromJson(outputsElement, BaseOutputs.class));
-        dsResult.setOutputs((BaseOutputs) new Gson().fromJson(outputsElement, this.getBaseOutputType()));
+        dsResult.setOutputs((BaseOutputs) new Gson().fromJson(outputsElement, this.getOutputType()));
       }
 
       // Convert any rows to instance objects
@@ -139,7 +138,7 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
         // Loop through the rows array
         for (int i = 0; i < rowsArray.size(); ++i) {
           JsonObject rowObject = rowsArray.get(i).getAsJsonObject();
-          BaseRow baseRow = parseRow(rowObject);
+          BaseRow baseRow = this.parseRow(rowObject);
 
           if (baseRow != null) {
             dsResult.addRow(baseRow);
@@ -147,57 +146,24 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
         }
       }
 
-      // Every result will have "rowLimitExceeded", so we don't even test. Just read it.
-      dsResult.setRowLimitExceeded(jsonObject.get("rowLimitExceeded").getAsBoolean());
-
-      // TODO: Delete code below line
-      /*******************************************************/
-
-      // Convert any tables to instance objects
-//      if (jsonObject.has("tables")) {
-//        JsonArray tablesArray = jsonObject.getAsJsonArray("tables");
-//        // tablesArray.size should always equal 1, as we will never actually return multiple result sets. The code works under that premise.
-//        if (tablesArray.size() > 0) {
-//          Table resultTable = new Table();
-//
-//          // Array item 0 will be the result set, so get is as a JsonObject
-//          JsonObject tableObject = tablesArray.get(0).getAsJsonObject();
-//
-//          // Put the column names into a List
-//          if (tableObject.has("columns")) {
-//            Type listType = new TypeToken<List<String>>() {
-//            }.getType();
-//
-//            List<String> columns = new Gson().fromJson(tableObject.get("columns"), listType);
-//            resultTable.setColumns(columns);
-//          }
-//
-//          // Parse the table rows
-//          if (tableObject.has("rows")) {
-//            JsonArray rowsArray = tableObject.get("rows").getAsJsonArray();
-//
-//            for (int i = 0; i < rowsArray.size(); ++i) {
-//              JsonArray rowArray = rowsArray.get(i).getAsJsonArray();
-//              BaseRow baseRow = parseRow(rowArray);
-//              if (baseRow != null) {
-//                resultTable.addRow(baseRow);
-//              }
-//            }
-//          }
-//
-//          if (tableObject.has("rowLimitExceeded")) {
-//            resultTable.setRowLimitExceeded(tableObject.get("rowLimitExceeded").getAsBoolean());
-//          }
-//
-//          dsResult.setTable(resultTable);
-//        }
-//      }
+      if(jsonObject.has("rowLimitExceeded")) {
+        dsResult.setRowLimitExceeded(jsonObject.get("rowLimitExceeded").getAsBoolean());
+      }
 
       // Every result will have "transaction no", so we don't even test. Just read it.
       dsResult.setTransactionNo(jsonObject.get("transactionNo").getAsString());
     }
 
     return dsResult;
+  }
+
+  private BaseRow parseRow(JsonObject rowObject) {
+    if (_rowGson == null) {
+      _rowGson = new Gson();
+    }
+
+    BaseRow newRow = _rowGson.fromJson(rowObject, this.getRowType());
+    return newRow;
   }
 
   /**
@@ -213,7 +179,7 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
     return dsResult;
   }
 
-  // ****** ABSTRACT METHODS ******
+  //region ABSTRACT METHODS
 
   /**
    * Get the Plex data source key for the http data source.
@@ -229,47 +195,20 @@ public abstract class DataSource implements IDataSourceConnectorCallback {
   protected abstract IBaseInput getBaseInput();
 
   /**
-   * Returns the Type of the BaseOutput class implemented by the class extending DataSource. Use by GSON to Deserialize the "outputs" section of the
-   * result JSON.
+   * Returns the Type of the class that will hold the output, implemented by the class extending DataSource. Use by GSON to Deserialize the "outputs"
+   * section of the result JSON.
    *
    * @return The Type of the class that will hold the outputs.
    */
-  protected Type getBaseOutputType() {
-    return BaseOutputs.class;
-  }
-
+  protected abstract Type getOutputType();
 
   /**
-   * Parses a row entry for the returned JSON.
+   * Returns the Type of the class that will hold the row, implemented by the class extending DataSource. Use by Gson to Deserialize the "row" section
+   * of the result JSON.
    *
-   * @param rowArray A row entry in the returned JSON.
+   * @return The Type of the class that will hold the row.
    */
-  // TODO: Remove
-  @Deprecated
-  protected abstract BaseRow parseRow(JsonArray rowArray);
+  protected abstract Type getRowType();
 
-  /**
-   * Parses a row entry for the returned JSON.
-   *
-   * @param rowObject A row entry in the returned JSON.
-   */
-  // TODO: Make abstract and remove implementation
-  protected BaseRow parseRow(JsonObject rowObject){return null;}
-
-  // ***** INTERNAL CLASSES *****
-
-  /**
-   * A class used to serialize the request input parameters into the correct JSON structure.
-   */
-  // TODO: Remove
-  @Deprecated
-  class BaseInputs {
-
-    @SerializedName("inputs")
-    IBaseInput inputs;
-
-    BaseInputs(IBaseInput baseInput) {
-      inputs = baseInput;
-    }
-  }
+  //endregion
 }

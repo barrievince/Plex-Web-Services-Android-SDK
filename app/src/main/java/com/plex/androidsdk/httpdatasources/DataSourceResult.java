@@ -30,6 +30,7 @@ public class DataSourceResult {
 
   private BaseOutputs outputs;
   //TODO: Obsolete. To be removed
+  @Deprecated
   private Table table;
 
   private List<BaseRow> rows = new ArrayList<>();
@@ -40,13 +41,13 @@ public class DataSourceResult {
   private Exception exception;
   private boolean error;
 
+  public Exception getException() {
+    return exception;
+  }
+
   public void setException(Exception exception) {
     this.exception = exception;
     this.error = true;
-  }
-
-  public Exception getException() {
-    return exception;
   }
 
   public boolean isError() {
@@ -66,11 +67,13 @@ public class DataSourceResult {
   }
 
   //TODO: Obsolete. To be removed
+  @Deprecated
   public Table getTable() {
     return table;
   }
 
   //TODO: Obsolete. To be removed
+  @Deprecated
   public void setTable(Table table) {
     this.table = table;
   }

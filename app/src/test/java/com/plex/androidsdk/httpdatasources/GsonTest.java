@@ -20,20 +20,36 @@
 
 package com.plex.androidsdk.httpdatasources;
 
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import static org.junit.Assert.assertEquals;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.lang.reflect.Type;
 import org.junit.Test;
 
 public class GsonTest {
 
-    @Test
-    public void parseResultTest() {
-        Gson gson = new Gson();
+  @Test
+  public void parseResultTest() {
+    Gson gson = new Gson();
 
-        // TODO: Implement Gson tests
+    // TODO: Implement Gson tests
+  }
+
+  // Test if resulting class from Gson conversion is Base or Extended
+  @Test
+  public void ParseTest() {
+    String inputJson = "{\"testInt\": 2, \"testString\": \"Hello World\"}";
+    Gson gson = new Gson();
+
+    JsonObject jsonObject = new JsonParser().parse(inputJson).getAsJsonObject();
+    if (jsonObject.isJsonObject()) {
+      ExtendBaseClass ebc = gson.fromJson(jsonObject, this.getOutputType());
+      BaseClass base = gson.fromJson(jsonObject, this.getOutputType());
+      assertEquals(ebc.testInt, 2);
     }
+  }
 
 //    @Test
 //    public void parseInputTest() {
@@ -56,5 +72,20 @@ public class GsonTest {
 //        @SerializedName("inputInt2_serializedName")
 //        public int inputInt2 = 9999;
 //    }
+
+
+  protected Type getOutputType() {
+    return ExtendBaseClass.class;
+  }
+
+  protected class BaseClass {
+
+  }
+
+  protected class ExtendBaseClass extends BaseClass {
+
+    public int testInt = 0;
+    public String testString = "";
+  }
 
 }

@@ -20,7 +20,7 @@
 
 package com.plex.androidsdk.httpdatasources.part;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import com.plex.androidsdk.httpdatasources.DataSourceResult;
 import com.plex.androidsdk.httpdatasources.HttpDataSourceCredentials;
@@ -28,7 +28,6 @@ import com.plex.androidsdk.httpdatasources.HttpDataSourceResult;
 import com.plex.androidsdk.httpdatasources.IDataSourceCallback;
 import com.plex.androidsdk.httpdatasources.IDataSourceConnector;
 import com.plex.androidsdk.httpdatasources.IDataSourceConnectorCallback;
-import com.plex.androidsdk.httpdatasources.Inventory.Container_Get1;
 import org.junit.Test;
 
 public class Part_Name_Output_GetTest {
@@ -101,13 +100,7 @@ public class Part_Name_Output_GetTest {
     public void execute(int dataSourceKey, HttpDataSourceCredentials credentials, String serverName, boolean useTestServer, String jsonRequest,
         IDataSourceConnectorCallback callback) {
 
-      String jsonResponse = "{\n"
-          + "    \"outputs\": {\n"
-          + "        \"Name\": \"Rear Suspension Arm\"\n"
-          + "    },\n"
-          + "    \"tables\": [],\n"
-          + "    \"transactionNo\": \"3835652\"\n"
-          + "}";
+      String jsonResponse = "{\"outputs\":{\"Name\":\"Rear Suspension Arm\"},\"tables\":[],\"transactionNo\":\"3836078\"}";
 
       HttpDataSourceResult result = new HttpDataSourceResult(jsonResponse, 200);
 
