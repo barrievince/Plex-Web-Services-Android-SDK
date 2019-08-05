@@ -29,9 +29,6 @@ import java.util.List;
 public class DataSourceResult {
 
   private BaseOutputs outputs;
-  //TODO: Obsolete. To be removed
-  @Deprecated
-  private Table table;
 
   private List<BaseRow> rows = new ArrayList<>();
   private boolean rowLimitExceeded = false;
@@ -65,19 +62,6 @@ public class DataSourceResult {
   public void setOutputs(BaseOutputs outputs) {
     this.outputs = outputs;
   }
-
-  //TODO: Obsolete. To be removed
-  @Deprecated
-  public Table getTable() {
-    return table;
-  }
-
-  //TODO: Obsolete. To be removed
-  @Deprecated
-  public void setTable(Table table) {
-    this.table = table;
-  }
-
 
   public List<BaseRow> getRows() {
     return rows;
