@@ -31,6 +31,18 @@ public class Container_Move_Simple extends DataSource {
 
   private InputParameters inputParameters = new InputParameters();
 
+  /**
+   * Override constructor for non-testing
+   */
+  public Container_Move_Simple(IDataSourceCallback iDataSourceCallback,
+      HttpDataSourceCredentials credentials,
+      String serverName) {
+    super(iDataSourceCallback, credentials, serverName, false);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   public Container_Move_Simple(
       IDataSourceCallback iDataSourceCallback,
       HttpDataSourceCredentials credentials,
@@ -38,52 +50,90 @@ public class Container_Move_Simple extends DataSource {
     super(iDataSourceCallback, credentials, serverName, useTestServer);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   protected Container_Move_Simple(IDataSourceCallback iDataSourceCallback,
       HttpDataSourceCredentials credentials, String serverName, boolean useTestServer,
       IDataSourceConnector connector) {
     super(iDataSourceCallback, credentials, serverName, useTestServer, connector);
   }
 
+  /**
+   * Method to enable setting the Location input parameter.
+   *
+   * @param location The Location to search for.
+   */
   public void setLocation(String location) {
     inputParameters.Location = location;
 
   }
 
+  /**
+   * Method to enable setting the Serial No input parameter.
+   *
+   * @param serialNo The Serial No to search for.
+   */
   public void setSerialNo(String serialNo) {
     inputParameters.Serial_No = serialNo;
 
   }
 
+  /**
+   * Method to enable setting the Update By input parameter.
+   *
+   * @param updateBy The Update By to search for.
+   */
   public void setUpdateBy(int updateBy) {
     inputParameters.Update_By = updateBy;
 
   }
 
+  /**
+   * Method to enable validating the location input parameter.
+   *
+   * @param validateLocation boolean to indicate whether to validate the location input parameter.
+   */
   public void setValidateLocation(boolean validateLocation) {
     inputParameters.ValidateLocation = validateLocation;
 
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected int getDataSourceKey() {
     return 17218;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected IBaseInput getBaseInput() {
     return inputParameters;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected Type getOutputType() {
     return OutputParameters.class;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected Type getRowType() {
     return null;
   }
 
+  /**
+   * Input parameters for data source call. Used by Gson to serialize into JSON.
+   */
   protected class InputParameters implements IBaseInput {
 
     public String Location = "";
@@ -92,7 +142,12 @@ public class Container_Move_Simple extends DataSource {
     public boolean ValidateLocation = false;
 
   }
-  protected class OutputParameters extends BaseOutputs{
+
+  /**
+   * Output parameters for data source call. Used by Gson to de-serialize from JSON.
+   */
+  protected class OutputParameters extends BaseOutputs {
+
     public int RetVal;
 
   }
